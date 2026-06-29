@@ -1,0 +1,37 @@
+name: Compilar mi APK
+
+# Esto le dice a GitHub que trabaje cada vez que subas cambios
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Copiar el código del repositorio
+    - name: Descargar el código
+      uses: actions/checkout@v4
+
+    # 2. Preparar el entorno de Android (Java)
+    - name: Configurar Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    # 3. Darle permiso al sistema para compilar
+    - name: Otorgar permisos de ejecución
+      run: chmod +x gradlew
+
+    # 4. El paso clave: Crear el APK
+    - name: Construir el APK
+      run: ./gradlew assembleDebug
+
+    # 5. Guardar el archivo final para que lo puedas descargar
+    - name: Guardar APK como resultado
+      uses: actions/upload-artifact@v4
+      with:
+        name: MiAplicacionInstalable
+        path: app/build/outputs/apk/debug/app-debug.apk
